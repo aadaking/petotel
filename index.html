@@ -327,12 +327,14 @@ ccc
     <div class="wrap">
         <div class="section-head">
             <div class="eyebrow">Rezervasyon sorgulama</div>
+            <form id="reserveFind" novalidate>
             <div class="field-row">
                 <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
             </div>
             <div class="submit-row">
               <button type="submit" class="btn-primary">Sorgula</button>
             </div>
+            </form>
         </div>
     </div>
 </section>
@@ -551,6 +553,44 @@ ccc
     for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
     return s;
   }
+    
+/* ---------- DATA ccc---------- */
+  async function findReservation() {
+    const formFind = document.getElementById("reserveFind").value.trim();
+    if (!formFind) {
+      alert("Lütfen rezervasyon kodunu giriniz.");
+      return;
+    }
+    const reservation = await searchReservation(formFind);
+    if (!reservation) {
+      document.getElementById("result").innerHTML =
+        "<p>Rezervasyon bulunamadı.</p>";
+      return;
+    }
+    document.getElementById("result").innerHTML = `
+      <h3>Rezervasyon Bilgileri</h3>
+      <p><b>Kod:</b> ${reservation.code}</p>
+      <p><b>Müşteri:</b> ${reservation.owner_name}</p>
+      <p><b>Evcil Hayvan:</b> ${reservation.pet_name}</p>
+      <p><b>Giriş:</b> ${reservation.entry_date}</p>
+      <p><b>Çıkış:</b> ${reservation.exit_date}</p>
+      <p><b>Durum:</b> ${reservation.status}</p>
+    `;
+  }
+    
+    async function searchReservation(code) {
+      const { data, error } = await supabaseClient
+        .from("reservations")
+        .select("*")
+        .eq("code", code)
+        .single();
+      if (error) {
+        console.error(error);
+        return null;
+      }
+      return data;
+    }
+/* ---------- DATA ccc---------- */
 
   const form = document.getElementById('reserveForm');
   const formError = document.getElementById('formError');
