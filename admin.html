@@ -270,7 +270,7 @@
   </main>
 </div>
 
-
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe" },
@@ -282,8 +282,8 @@
   let calDate = new Date();
 
   // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
- const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co/rest/v1/';
- const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5yY2l2a2NtdWJkcGRjYWh5eGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MDM2ODUsImV4cCI6MjEwMDA3OTY4NX0.Vg_hfUAH-JbfQBBPJADrxmxRzZjQJEbkKIjRXQSUhEc';
+  const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co/rest/v1/';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5yY2l2a2NtdWJkcGRjYWh5eGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MDM2ODUsImV4cCI6MjEwMDA3OTY4NX0.Vg_hfUAH-JbfQBBPJADrxmxRzZjQJEbkKIjRXQSUhEc';
   let supabase = null;
   try{
     supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
