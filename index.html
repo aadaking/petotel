@@ -328,14 +328,24 @@ ccc
         <div class="section-head">
             <div class="eyebrow">Rezervasyon sorgulama</div>
             <div class="field-row">
-                <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK..."></div>
+                <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
             </div>
             <div class="submit-row">
               <button type="submit" class="btn-primary">Sorgula</button>
             </div>
         </div>
     </div>
+    
+    <div class="summary-card">
+      <h3>Özet</h3>
+      <div class="summary-row"><span>Oda</span><span class="value" id="sumRoom">—</span></div>
+      <div class="summary-row"><span>Gece sayısı</span><span class="value" id="sumNights">—</span></div>
+      <div class="summary-row"><span>Gecelik ücret</span><span class="value" id="sumRate">—</span></div>
+      <div class="summary-row total"><span>Tahmini Toplam</span><span class="value" id="sumTotal">—</span></div>
+      <p class="summary-note">Bu tutar ön bilgilendirme amaçlıdır. Kesin tutar rezervasyon onayında teyit edilir. Ödeme altyapısı devreye alındığında bu ekrandan doğrudan ön ödeme alınabilecektir.</p>
+    </div>
 </section>
+ccc
 
 <section id="rezervasyon">
   <div class="wrap">
