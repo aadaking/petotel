@@ -282,9 +282,14 @@
   let calDate = new Date();
 
   // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
-  const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co/rest/v1/;
-  const SUPABASE_ANON_KEY = 'sb_publishable_Zyo7MnRVO7wtmjNoyfQMsw_-RUil0-1';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+  let supabase = null;
+  try{
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }catch(e){
+    console.error('Supabase bağlantısı kurulamadı — URL/anahtar veya CDN yükleme sorunu olabilir.', e);
+  }
 
   /* ---------- LOGIN ---------- */
   const loginScreen = document.getElementById('loginScreen');
@@ -294,6 +299,11 @@
   const loginError = document.getElementById('loginError');
 
   async function tryLogin(){
+    if(!supabase){
+      loginError.textContent = 'Bağlantı kurulamadı: SUPABASE_URL/ANON_KEY kontrol edin.';
+      loginError.style.display = 'block';
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({
       email: emailInput.value,
       password: pwInput.value
@@ -321,6 +331,7 @@
 
   // Daha önce giriş yapılmışsa (sayfa yenilendiğinde) oturumu koru
   (async ()=>{
+    if(!supabase) return;
     const { data } = await supabase.auth.getSession();
     if(data && data.session){
       loginScreen.style.display = 'none';

@@ -462,11 +462,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
-  const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co/rest/v1/';
-  const SUPABASE_ANON_KEY = 'sb_publishable_Zyo7MnRVO7wtmjNoyfQMsw_-RUil0-1';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
     { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
@@ -495,6 +490,16 @@
     opt.textContent = `${r.name} — ₺${r.price}/gece`;
     roomSelect.appendChild(opt);
   });
+
+  // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
+  let supabase = null;
+  try{
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }catch(e){
+    console.error('Supabase bağlantısı kurulamadı — URL/anahtar veya CDN yükleme sorunu olabilir.', e);
+  }
 
   const checkin = document.getElementById('checkin');
   const checkout = document.getElementById('checkout');
@@ -565,6 +570,13 @@
     };
 
     const submitBtn = form.querySelector('button[type=submit]');
+
+    if(!supabase){
+      formError.textContent = 'Rezervasyon sistemi şu an bağlanamıyor (Supabase bağlantı bilgileri eksik/hatalı olabilir). Lütfen bizi telefonla arayın.';
+      formError.style.display='block';
+      return;
+    }
+
     submitBtn.disabled = true;
     submitBtn.textContent = 'Gönderiliyor...';
 
