@@ -409,7 +409,7 @@
         <div class="ticket-wrap" id="ticketWrap">
           <div class="ticket">
             <div class="ticket-main">
-              <span class="status">Onay Bekliyor</span>
+              <span class="status status-pending">Onay Bekliyor</span>
               <h3 id="ticketPetLine">—</h3>
               <div class="code">Rezervasyon No: <span id="ticketCode">—</span></div>
               <div class="ticket-grid">
@@ -775,6 +775,9 @@
 
     form.reset();
     updateSummary();
+    
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", clearSearchResult);
   });
 </script>
 </body>
