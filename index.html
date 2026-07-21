@@ -454,7 +454,7 @@
                 <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
             </div>
             <div class="submit-row">
-              <button type="submit" class="btn-primary">Sorgula</button>
+              <button type="submit" class="btn-ghost">Sorgula</button>
             </div>
             </form>
             <div id="result" style="margin-top:30px;"></div>
@@ -673,12 +673,8 @@
         document.getElementById("result").innerHTML = "";
         document.getElementById("code").value = "";
     }
-    // Tüm butonlar
-    document.querySelectorAll("button").forEach(btn => {
-        btn.addEventListener("click", clearSearchResult);
-    });
     // Buton görünümündeki linkler
-    document.querySelectorAll(".btn-primary, .btn-ghost, .nav-cta").forEach(btn => {
+    document.querySelectorAll(".btn-primary, .nav-cta").forEach(btn => {
         btn.addEventListener("click", clearSearchResult);
     });
     // Menü linkleri
