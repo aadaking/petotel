@@ -555,7 +555,7 @@ ccc
   }
     
 /* ---------- DATA ccc---------- */
-  async function findReservation() {
+   function findReservation() {
     const formFind = document.getElementById("reserveFind").value.trim();
     if (!formFind) {
       alert("Lütfen rezervasyon kodunu giriniz.");
@@ -578,7 +578,7 @@ ccc
     `;
   }
     
-    async function searchReservation(code) {
+    function searchReservation(code) {
       const { data, error } = await supabaseClient
         .from("reservations")
         .select("*")
