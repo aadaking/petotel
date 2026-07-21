@@ -481,9 +481,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    
-    document.getElementById("code").value = "";
-    document.getElementById("result").value = "";
+    document.reset();
+    data.reset();
     
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
@@ -649,8 +648,8 @@
       return data;
     }
     /* ---------- DATA ---------- */
-  document.getElementById("code").value = "";
-  document.getElementById("result").value = "";
+    document.reset();
+    data.reset();
     
   const form = document.getElementById('reserveForm');
   const formError = document.getElementById('formError');
