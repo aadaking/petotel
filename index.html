@@ -204,14 +204,20 @@
     display:grid; grid-template-columns:1fr auto;
   }
   .ticket-main{ padding:26px 26px; }
-  .status-pending{color:#B4472A; background:rgba(180,71,42,.12);}
-  .status-waiting{color:#C98A2B; background:rgba(227,168,87,.18);}
-  .status-approved{color:#234D35;background:rgba(35,77,53,.15);}
   .ticket-main .status{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:700;
-    letter-spacing:0.06em; text-transform:uppercase; color:var(--rust); background:rgba(180,71,42,0.1);
-    padding:5px 10px; border-radius:999px; margin-bottom:12px;
+      display:inline-block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      padding:5px 10px;
+      border-radius:999px;
+      margin-bottom:12px;
   }
+    .ticket-main .status.status-pending{color:#B4472A;background:rgba(180,71,42,.12);}
+    .ticket-main .status.status-waiting{color:#C98A2B;background:rgba(227,168,87,.18);}
+    .ticket-main .status.status-approved{color:#234D35;background:rgba(35,77,53,.15);}
     
   .ticket-main h3{ font-size:1.3rem; margin-bottom:4px; }
   .ticket-main .code{ font-family:'JetBrains Mono', monospace; color:var(--honey-dark); font-weight:700; }
@@ -584,7 +590,9 @@
         <div class="ticket-wrap" style="display:block">
           <div class="ticket">
             <div class="ticket-main">
-              <span class="status">${reservation.status}</span>
+              <span class="status ${getStatusClass(reservation.status)}">
+                  ${reservation.status}
+              </span>
               <h3>${reservation.pet_name}</h3>
               <div class="code">
                 Rezervasyon No: ${reservation.code}
@@ -648,16 +656,16 @@
       return data;
     }
     
-//    function getStatusClass(status){
-//        switch((status || "").toLowerCase()){
-//            case "reddedildi":
-//                return "status-pending";
-//            case "beklemede":
-//                return "status-waiting";
-//            case "onaylandi":
-//                return "status-approved";
-//        }
-//    }
+    function getStatusClass(status){
+       switch((status || "").toLowerCase()){
+            case "reddedildi":
+                return "status-pending";
+            case "beklemede":
+                return "status-waiting";
+            case "onaylandi":
+                return "status-approved";
+        }
+    }
     
     /* ---------- DATA ---------- */
   
