@@ -291,7 +291,7 @@
   <div class="hero-grid">
     <div>
       <div class="eyebrow">Konaklama · 7/24 bakım</div>
-      <h1>Siz yokken, <em>evindeki gibi</em> hissetsin.</h1>
+      <h1>Siz yokken, <em>evinde</em> hissetsin.</h1>
       <p class="lede">Köpek ve kedi dostlarınız için güvenli, sıcak ve oyun dolu bir konaklama deneyimi. Odanızı seçin, tarihleri belirleyin, rezervasyon talebinizi birkaç dakikada oluşturun.</p>
       <div class="hero-actions">
         <a href="#rezervasyon" class="btn-primary">Hemen Rezervasyon Talep Et</a>
@@ -482,6 +482,9 @@ ccc
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    document.getElementById("code").value = "";
+    result.innerHTML = "";
+    
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
     { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
@@ -556,8 +559,6 @@ ccc
   }
     
     /* ---------- DATA ---------- */
-    document.getElementById("code").value = "";
-    result.innerHTML = "";
     
     // Rezervasyon arama formu
     document.getElementById("reserveFind").addEventListener("submit", async (e) => {
