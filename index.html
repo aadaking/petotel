@@ -491,34 +491,40 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const ROOMS = [
-    { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
-    { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
-    { id:"kedi", name:"Kedi Odası", price:400, cap:"Kedi dostlarımız için", tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
-    { id:"vip", name:"VIP Aile Süiti", price:980, cap:"2 pet'e kadar birlikte", tags:["Klima","Günlük masaj","Öncelikli bakım"] },
-  ];
+//  const ROOMS = [
+// { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
+//    { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
+//    { id:"kedi", name:"Kedi Odası", price:400, cap:"Kedi dostlarımız için", tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
+//    { id:"vip", name:"VIP Aile Süiti", price:980, cap:"2 pet'e kadar birlikte", tags:["Klima","Günlük masaj","Öncelikli bakım"] },
+//  ];
+const ROOMS = [
+  {id: "standart",name: "Standart Kulübe",price: 450,cap: "Küçük–Orta boy köpek",petTypes: ["Köpek", "Diğer"],tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"]},
+  {id: "deluxe",name: "Deluxe Süit",price: 750,cap: "Her boy köpek",petTypes: ["Köpek"],tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"]},
+  {id: "kedi",name: "Kedi Odası",price: 400,cap: "Kedi dostlarımız için",petTypes: ["Kedi"],tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"]},
+  {id: "vip",name: "VIP Aile Süiti",price: 980,cap: "2 pet'e kadar birlikte",petTypes: ["Köpek","Kedi"],tags:["Klima","Günlük masaj","Öncelikli bakım"]}];
 
   const roomGrid = document.getElementById('roomGrid');
   const roomSelect = document.getElementById('roomSelect');
-  ROOMS.forEach(r=>{
-    roomGrid.insertAdjacentHTML('beforeend', `
-      <div class="room-card">
-        <div class="notch"></div>
-        <div class="room-top">
-          <h3>${r.name}</h3>
-          <div class="price">₺${r.price}<small>/ gece</small></div>
-        </div>
-        <div class="room-body">
-          <p>${r.cap}</p>
-          <div class="room-tags">${r.tags.map(t=>`<span>${t}</span>`).join('')}</div>
-        </div>
-      </div>
-    `);
-    const opt = document.createElement('option');
-    opt.value = r.id;
-    opt.textContent = `${r.name} — ₺${r.price}/gece`;
-    roomSelect.appendChild(opt);
-  });
+  updateRoomOptions();
+//  ROOMS.forEach(r=>{
+//    roomGrid.insertAdjacentHTML('beforeend', `
+//      <div class="room-card">
+//        <div class="notch"></div>
+//        <div class="room-top">
+//          <h3>${r.name}</h3>
+//          <div class="price">₺${r.price}<small>/ gece</small></div>
+//        </div>
+//        <div class="room-body">
+//          <p>${r.cap}</p>
+//          <div class="room-tags">${r.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+//        </div>
+//      </div>
+//    `);
+//    const opt = document.createElement('option');
+//    opt.value = r.id;
+//    opt.textContent = `${r.name} — ₺${r.price}/gece`;
+//    roomSelect.appendChild(opt);
+//  });
 
   // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
   const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co';
@@ -536,7 +542,24 @@
   const sumNights = document.getElementById('sumNights');
   const sumRate = document.getElementById('sumRate');
   const sumTotal = document.getElementById('sumTotal');
-
+//ccc
+  const petType = document.getElementById("petType");
+  function updateRoomOptions() {
+      const selectedType = petType.value;
+      roomSelect.innerHTML = "";
+      const rooms = ROOMS.filter(room => {
+          if (!selectedType) return true;
+          return room.petTypes.includes(selectedType);
+      });
+      rooms.forEach(room => {
+          const option = document.createElement("option");
+          option.value = room.id;
+          option.textContent = `${room.name} — ₺${room.price}/gece`;
+          roomSelect.appendChild(option);
+      });
+      updateSummary();
+  }
+//ccc
   function currentRoom(){ return ROOMS.find(r=>r.id===roomSelect.value) || ROOMS[0]; }
   function nightsBetween(){
     if(!checkin.value || !checkout.value) return 0;
@@ -552,6 +575,7 @@
     sumNights.textContent = nights > 0 ? nights : '—';
     sumTotal.textContent = nights > 0 ? `₺${(room.price*nights).toLocaleString('tr-TR')}` : '—';
   }
+  petType.addEventListener("change", updateRoomOptions);
   roomSelect.addEventListener('change', updateSummary);
   checkin.addEventListener('change', updateSummary);
   checkout.addEventListener('change', updateSummary);
