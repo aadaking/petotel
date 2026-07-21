@@ -536,7 +536,7 @@
   const sumNights = document.getElementById('sumNights');
   const sumRate = document.getElementById('sumRate');
   const sumTotal = document.getElementById('sumTotal');
-  const roomSelectf = document.getElementById("room");
+  const roomSelectf = roomSelect;
   const petType = document.getElementById("petType");
 
   function currentRoom(){ return ROOMS.find(r=>r.id===roomSelect.value) || ROOMS[0]; }
@@ -585,9 +585,10 @@
             option.textContent = `${room.name} — ₺${room.price}/gece`;
             roomSelectf.appendChild(option);
         });
-        updateRoomOptions();
-        petType.addEventListener("change", updateRoomOptions)
+        updateSummary();
     }
+    petType.addEventListener("change", updateRoomOptions);
+    updateRoomOptions();
     
   roomSelectf.addEventListener('change', updateSummary);
   checkin.addEventListener('change', updateSummary);
