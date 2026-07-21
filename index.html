@@ -205,10 +205,20 @@
   }
   .ticket-main{ padding:26px 26px; }
   .ticket-main .status{
-    display:inline-block; font-family:'JetBrains Mono', monospace; font-size:0.72rem; font-weight:700;
-    letter-spacing:0.06em; text-transform:uppercase; color:var(--rust); background:rgba(180,71,42,0.1);
-    padding:5px 10px; border-radius:999px; margin-bottom:12px;
+      display:inline-block;
+      font-family:'JetBrains Mono', monospace;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      padding:5px 10px;
+      border-radius:999px;
+      margin-bottom:12px;
   }
+    .ticket-main .status.status-pending{color:#B4472A;background:rgba(180,71,42,.12);}
+    .ticket-main .status.status-waiting{color:#C98A2B;background:rgba(227,168,87,.18);}
+    .ticket-main .status.status-approved{color:#234D35;background:rgba(35,77,53,.15);}
+    
   .ticket-main h3{ font-size:1.3rem; margin-bottom:4px; }
   .ticket-main .code{ font-family:'JetBrains Mono', monospace; color:var(--honey-dark); font-weight:700; }
   .ticket-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-top:16px; font-size:0.88rem; }
@@ -291,7 +301,7 @@
   <div class="hero-grid">
     <div>
       <div class="eyebrow">Konaklama · 7/24 bakım</div>
-      <h1>Siz yokken, <em>evindeki gibi</em> hissetsin.</h1>
+      <h1>Siz yokken, <em>evinde</em> hissetsin.</h1>
       <p class="lede">Köpek ve kedi dostlarınız için güvenli, sıcak ve oyun dolu bir konaklama deneyimi. Odanızı seçin, tarihleri belirleyin, rezervasyon talebinizi birkaç dakikada oluşturun.</p>
       <div class="hero-actions">
         <a href="#rezervasyon" class="btn-primary">Hemen Rezervasyon Talep Et</a>
@@ -322,23 +332,6 @@
   </div>
 </section>
 
-ccc
-<section id="rezervasyonsorgu">
-    <div class="wrap">
-        <div class="section-head">
-            <div class="eyebrow">Rezervasyon sorgulama</div>
-            <form id="reserveFind" novalidate>
-            <div class="field-row">
-                <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
-            </div>
-            <div class="submit-row">
-              <button type="submit" class="btn-primary">Sorgula</button>
-            </div>
-            </form>
-        </div>
-    </div>
-</section>
-ccc
 
 <section id="rezervasyon">
   <div class="wrap">
@@ -452,6 +445,23 @@ ccc
   </div>
 </section>
 
+<section class="rooms" id="rezervasyonsorgu">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="eyebrow">Rezervasyon sorgulama</div>
+            <form id="reserveFind" novalidate>
+            <div class="field-row">
+                <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
+            </div>
+            <div class="submit-row">
+              <button type="submit" class="btn-primary">Sorgula</button>
+            </div>
+            </form>
+            <div id="result" style="margin-top:30px;"></div>
+        </div>
+    </div>
+</section>
+
 <footer id="iletisim">
   <div class="wrap footer-grid">
     <div>
@@ -554,30 +564,86 @@ ccc
     return s;
   }
     
-/* ---------- DATA ccc---------- */
-    async function findReservation() {
-    const formFind = document.getElementById("reserveFind").value.trim();
-    if (!formFind) {
-      alert("Lütfen rezervasyon kodunu giriniz.");
-      return;
-    }
-    const reservation = await searchReservation(formFind);
-    if (!reservation) {
-      document.getElementById("result").innerHTML =
-        "<p>Rezervasyon bulunamadı.</p>";
-      return;
-    }
-    document.getElementById("result").innerHTML = `
-      <h3>Rezervasyon Bilgileri</h3>
-      <p><b>Kod:</b> ${reservation.code}</p>
-      <p><b>Müşteri:</b> ${reservation.owner_name}</p>
-      <p><b>Evcil Hayvan:</b> ${reservation.pet_name}</p>
-      <p><b>Giriş:</b> ${reservation.entry_date}</p>
-      <p><b>Çıkış:</b> ${reservation.exit_date}</p>
-      <p><b>Durum:</b> ${reservation.status}</p>
-    `;
-  }
-    function searchReservation(code) {
+    /* ---------- DATA ---------- */
+    // Rezervasyon arama formu
+    document.getElementById("reserveFind").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const code = document.getElementById("code").value.trim().toUpperCase();
+
+      if (!code) {
+        alert("Lütfen rezervasyon kodunu giriniz.");
+        return;
+      }
+
+      const reservation = await searchReservation(code);
+      const result = document.getElementById("result");
+      if (!reservation) {
+        result.innerHTML = `
+          <div class="form-error" style="display:block">
+            Rezervasyon bulunamadı.
+          </div>`;
+        return;
+      }
+
+      result.innerHTML = `
+        <div class="ticket-wrap" style="display:block">
+          <div class="ticket">
+            <div class="ticket-main">
+              <span class="status ${getStatusClass(reservation.status)}">
+                  ${reservation.status}
+              </span>
+              <h3>${reservation.pet_name}</h3>
+              <div class="code">
+                Rezervasyon No: ${reservation.code}
+              </div>
+              <div class="ticket-grid">
+                <div>
+                  <span class="label">Sahibi</span>
+                  ${reservation.owner_name}
+                </div>
+                <div>
+                  <span class="label">Telefon</span>
+                  ${reservation.owner_phone}
+                </div>
+                <div>
+                  <span class="label">Giriş</span>
+                  ${reservation.check_in}
+                </div>
+                <div>
+                  <span class="label">Çıkış</span>
+                  ${reservation.check_out}
+                </div>
+                <div>
+                  <span class="label">Oda</span>
+                  ${reservation.room_name}
+                </div>
+                <div>
+                  <span class="label">Toplam</span>
+                  ₺${Number(reservation.total).toLocaleString("tr-TR")}
+                </div>
+              </div>
+            </div>
+            <div class="ticket-stub">
+                  <svg class="paw" viewBox="0 0 40 40" fill="none">
+                    <path d="M20 22c-4.5 0-8 3-8 6.2 0 1.5 1.2 2.3 2.7 1.9 1.6-.4 3.4-.7 5.3-.7s3.7.3 5.3.7c1.5.4 2.7-.4 2.7-1.9 0-3.2-3.5-6.2-8-6.2z" fill="#E3A857"/>
+                    <ellipse cx="13.5" cy="17" rx="2.3" ry="2.9" fill="#E3A857"/>
+                    <ellipse cx="26.5" cy="17" rx="2.3" ry="2.9" fill="#E3A857"/>
+                    <ellipse cx="17.3" cy="13" rx="1.9" ry="2.4" fill="#E3A857"/>
+                    <ellipse cx="22.7" cy="13" rx="1.9" ry="2.4" fill="#E3A857"/>
+                  </svg>
+                  <div class="stub-code">
+                    ${reservation.code}
+                  </div>
+                </div>
+          </div>
+        </div>`;
+
+    });
+
+    // Supabase'den rezervasyonu getir
+
+    async function searchReservation(code) {
       const { data, error } = await supabaseClient
         .from("reservations")
         .select("*")
@@ -589,8 +655,27 @@ ccc
       }
       return data;
     }
-/* ---------- DATA ccc---------- */
-
+    
+    function getStatusClass(status){
+       switch((status || "").toLowerCase()){
+            case "reddedildi":
+                return "status-pending";
+            case "iptal":
+                return "status-pending";
+            case "beklemede":
+                return "status-waiting";
+            case "onaylandi":
+                return "status-approved";
+        }
+    }
+    
+    document.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+            document.getElementById("result").innerHTML = "";
+        });
+    });
+    /* ---------- DATA ---------- */
+  
   const form = document.getElementById('reserveForm');
   const formError = document.getElementById('formError');
   form.addEventListener('submit', async (e)=>{
