@@ -660,6 +660,8 @@
        switch((status || "").toLowerCase()){
             case "reddedildi":
                 return "status-pending";
+            case "iptal":
+                return "status-pending";
             case "beklemede":
                 return "status-waiting";
             case "onaylandi":
@@ -680,6 +682,8 @@
       return;
     }
     formError.style.display='none';
+    
+    result.innerHTML = "".
 
     const room = currentRoom();
     const total = room.price * nights;
