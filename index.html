@@ -669,10 +669,21 @@
         }
     }
     
-    document.querySelectorAll("button").forEach(button => {
-        button.addEventListener("click", () => {
-            document.getElementById("result").innerHTML = "";
-        });
+    function clearSearchResult() {
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("code").value = "";
+    }
+    // Tüm butonlar
+    document.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", clearSearchResult);
+    });
+    // Buton görünümündeki linkler
+    document.querySelectorAll(".btn-primary, .btn-ghost, .nav-cta").forEach(btn => {
+        btn.addEventListener("click", clearSearchResult);
+    });
+    // Menü linkleri
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", clearSearchResult);
     });
     /* ---------- DATA ---------- */
   
