@@ -315,7 +315,7 @@
         <div class="stat-row"><span class="label">Kapasite</span><span class="value">20 kulübe</span></div>
         <div class="stat-row"><span class="label">Günlük kontrol</span><span class="value">4× bakım</span></div>
         <div class="stat-row"><span class="label">Veteriner desteği</span><span class="value">Sahada</span></div>
-        <div class="stat-row"><span class="label">Ort. doluluk</span><span class="value">%78</span></div>
+        <div class="stat-row"><span class="label">Ort. doluluk</span><span class="value" id="occupancyValue">—</span></div>
       </div>
     </div>
   </div>
@@ -492,10 +492,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const ROOMS = [
-    { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", petTypes: ["Köpek", "Diğer"], tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
-    { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", petTypes: ["Köpek"], tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
-    { id:"kedi", name:"Kedi Odası", price:400, cap:"Kedi dostlarımız için", petTypes: ["Kedi"], tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
-    { id:"vip", name:"VIP Aile Süiti", price:980, cap:"2 pet'e kadar birlikte", petTypes: ["Köpek","Kedi"] , tags:["Klima","Günlük masaj","Öncelikli bakım"] },
+    { id:"standart", name:"Standart Kulübe", price:450, units:8, cap:"Küçük–Orta boy köpek", petTypes: ["Köpek", "Diğer"], tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
+    { id:"deluxe", name:"Deluxe Süit", price:750, units:5, cap:"Her boy köpek", petTypes: ["Köpek"], tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
+    { id:"kedi", name:"Kedi Odası", price:400, units:5, cap:"Kedi dostlarımız için", petTypes: ["Kedi"], tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
+    { id:"vip", name:"VIP Aile Süiti", price:980, units:2, cap:"2 pet'e kadar birlikte", petTypes: ["Köpek","Kedi"] , tags:["Klima","Günlük masaj","Öncelikli bakım"] },
   ];
 
   const roomGrid = document.getElementById('roomGrid');
@@ -529,6 +529,19 @@
   }catch(e){
     console.error('Supabase bağlantısı kurulamadı — URL/anahtar veya CDN yükleme sorunu olabilir.', e);
   }
+
+  async function updateOccupancy(){
+    const el = document.getElementById('occupancyValue');
+    if(!el) return;
+    if(!supabaseClient){ el.textContent = '—'; return; }
+    const { data, error } = await supabaseClient.rpc('get_occupancy_today');
+    if(error){ console.error('Doluluk oranı alınamadı', error); el.textContent = '—'; return; }
+    const totalUnits = ROOMS.reduce((s,r)=> s + (r.units||0), 0) || 1;
+    const occupied = Math.min(Number(data) || 0, totalUnits);
+    const pct = Math.round((occupied/totalUnits)*100);
+    el.textContent = `%${pct}`;
+  }
+  updateOccupancy();
 
   const checkin = document.getElementById('checkin');
   const checkout = document.getElementById('checkout');
