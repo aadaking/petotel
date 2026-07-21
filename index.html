@@ -485,7 +485,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
     { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
@@ -560,7 +559,6 @@
   }
     
     /* ---------- DATA ---------- */
-    
     // Rezervasyon arama formu
     document.getElementById("reserveFind").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -660,8 +658,6 @@
                 return "status-waiting";
             case "onaylandi:
                 return "status-approved";
-            default:
-                return "status-pending";
         }
     }
     
