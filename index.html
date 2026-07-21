@@ -435,7 +435,6 @@
   </div>
 </section>
 
-ccc
 <section class="rooms" id="rezervasyonsorgu">
     <div class="wrap">
         <div class="section-head">
@@ -452,7 +451,6 @@ ccc
         </div>
     </div>
 </section>
-ccc
 
 <footer id="iletisim">
   <div class="wrap footer-grid">
@@ -484,6 +482,8 @@ ccc
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
     
+    document.getElementById("code").value = "";
+    document.getElementById("result").value = "";
     
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
@@ -649,7 +649,9 @@ ccc
       return data;
     }
     /* ---------- DATA ---------- */
-
+  document.getElementById("code").value = "";
+  document.getElementById("result").value = "";
+    
   const form = document.getElementById('reserveForm');
   const formError = document.getElementById('formError');
   form.addEventListener('submit', async (e)=>{
