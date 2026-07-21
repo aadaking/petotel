@@ -669,6 +669,11 @@
         }
     }
     
+    document.querySelectorAll("button").forEach(button => {
+        button.addEventListener("click", () => {
+            document.getElementById("result").innerHTML = "";
+        });
+    });
     /* ---------- DATA ---------- */
   
   const form = document.getElementById('reserveForm');
@@ -682,8 +687,6 @@
       return;
     }
     formError.style.display='none';
-    
-    result.innerHTML = "".
 
     const room = currentRoom();
     const total = room.price * nights;
