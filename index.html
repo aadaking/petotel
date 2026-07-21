@@ -538,27 +538,28 @@ const ROOMS = [
 
   const checkin = document.getElementById('checkin');
   const checkout = document.getElementById('checkout');
+  const roomSelect = document.getElementById("room");
+  const petType = document.getElementById("petType");
   const sumRoom = document.getElementById('sumRoom');
   const sumNights = document.getElementById('sumNights');
   const sumRate = document.getElementById('sumRate');
   const sumTotal = document.getElementById('sumTotal');
 //ccc
-  const petType = document.getElementById("petType");
-  function updateRoomOptions() {
-      const selectedType = petType.value;
-      roomSelect.innerHTML = "";
-      const rooms = ROOMS.filter(room => {
-          if (!selectedType) return true;
-          return room.petTypes.includes(selectedType);
-      });
-      rooms.forEach(room => {
-          const option = document.createElement("option");
-          option.value = room.id;
-          option.textContent = `${room.name} — ₺${room.price}/gece`;
-          roomSelect.appendChild(option);
-      });
-      updateSummary();
-  }
+function updateRoomOptions() {
+    const selectedType = petType.value;
+    roomSelect.innerHTML = "";
+    const rooms = ROOMS.filter(room => {
+        if (!selectedType) return true;
+        return room.petTypes.includes(selectedType);
+    });
+    rooms.forEach(room => {
+        const option = document.createElement("option");
+        option.value = room.id;
+        option.textContent = `${room.name} — ₺${room.price}/gece`;
+        roomSelect.appendChild(option);
+    });
+    updateSummary();
+}
 //ccc
   function currentRoom(){ return ROOMS.find(r=>r.id===roomSelect.value) || ROOMS[0]; }
   function nightsBetween(){
