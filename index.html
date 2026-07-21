@@ -409,7 +409,7 @@
         <div class="ticket-wrap" id="ticketWrap">
           <div class="ticket">
             <div class="ticket-main">
-              <span class="status">Onay Bekliyor</span>
+              <span class="status status-pending">Onay Bekliyor</span>
               <h3 id="ticketPetLine">—</h3>
               <div class="code">Rezervasyon No: <span id="ticketCode">—</span></div>
               <div class="ticket-grid">
@@ -492,10 +492,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const ROOMS = [
-    { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
-    { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
-    { id:"kedi", name:"Kedi Odası", price:400, cap:"Kedi dostlarımız için", tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
-    { id:"vip", name:"VIP Aile Süiti", price:980, cap:"2 pet'e kadar birlikte", tags:["Klima","Günlük masaj","Öncelikli bakım"] },
+    { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", petTypes: ["Köpek", "Diğer"], tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
+    { id:"deluxe", name:"Deluxe Süit", price:750, cap:"Her boy köpek", petTypes: ["Köpek"], tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
+    { id:"kedi", name:"Kedi Odası", price:400, cap:"Kedi dostlarımız için", petTypes: ["Kedi"], tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
+    { id:"vip", name:"VIP Aile Süiti", price:980, cap:"2 pet'e kadar birlikte", petTypes: ["Köpek","Kedi"], tags:["Klima","Günlük masaj","Öncelikli bakım"] },
   ];
 
   const roomGrid = document.getElementById('roomGrid');
@@ -582,137 +582,72 @@
             codeInput.focus();
             return;
         }
-
         const reservation = await searchReservation(code);
-
         codeInput.value = "";
-
         codeInput.focus();
-
         if (!reservation) {
-
             result.innerHTML = `
-
                 <div class="form-error" style="display:block">
-
                     Rezervasyon bulunamadı.
-
                 </div>`;
-
             return;
-
         }
-
         result.innerHTML = `
-
     <div class="ticket-wrap" style="display:block">
-
         <div class="ticket">
-
             <div class="ticket-main">
-
                 <span class="status ${getStatusClass(reservation.status)}">
-
                     ${reservation.status}
-
                 </span>
-
                 <h3>${reservation.pet_name}</h3>
-
                 <div class="code">
-
                     Rezervasyon No: ${reservation.code}
-
                 </div>
-
                 <div class="ticket-grid">
-
                     <div>
-
                         <span class="label">Sahibi</span>
-
                         ${reservation.owner_name}
-
                     </div>
-
                     <div>
-
                         <span class="label">Telefon</span>
-
                         ${reservation.owner_phone}
-
                     </div>
-
                     <div>
-
                         <span class="label">Giriş</span>
-
                         ${reservation.check_in}
-
                     </div>
-
                     <div>
-
                         <span class="label">Çıkış</span>
-
                         ${reservation.check_out}
-
                     </div>
-
                     <div>
-
                         <span class="label">Oda</span>
-
                         ${reservation.room_name}
-
                     </div>
-
                     <div>
-
                         <span class="label">Toplam</span>
-
                         ₺${Number(reservation.total).toLocaleString("tr-TR")}
-
                     </div>
-
                 </div>
-
             </div>
-
             <div class="ticket-stub">
-
                 <div class="stub-code">${reservation.code}</div>
-
             </div>
-
         </div>
-
     </div>`;
-
     });
 
     async function searchReservation(code) {
-
         const { data, error } = await supabaseClient
-
             .from("reservations")
-
             .select("*")
-
             .eq("code", code)
-
             .maybeSingle();
-
         if (error) {
-
             console.error(error);
-
             return null;
-
         }
-
         return data;
-
     }
     
     function clearSearchResult() {
@@ -740,8 +675,6 @@
                 return "status-approved";
         }
     }
-    
-    
     /* ---------- DATA ---------- */
   
   const form = document.getElementById('reserveForm');
