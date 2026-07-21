@@ -100,7 +100,7 @@
   }
   .btn-primary:hover{ transform:translateY(-2px); }
   .btn-ghost{
-    background:transparent; color:var(--pine-dark); border:1.5px solid var(--line);
+    background:var(--honey-dark); color:var(--pine-dark); border:1.5px solid var(--line);
     padding:14px 26px; border-radius:999px; font-weight:700; font-size:1rem;
     cursor:pointer; text-decoration:none; display:inline-block; font-family:inherit;
   }
@@ -454,7 +454,7 @@
                 <div><label for="code">Rezervasyon Kodu</label><input id="code" required placeholder="PK-..."></div>
             </div>
             <div class="submit-row">
-              <button type="submit" class="btn-primary">Sorgula</button>
+              <button type="submit" class="btn-ghost">Sorgula</button>
             </div>
             </form>
             <div id="result" style="margin-top:30px;"></div>
@@ -669,10 +669,17 @@
         }
     }
     
-    document.querySelectorAll("button").forEach(button => {
-        button.addEventListener("click", () => {
-            document.getElementById("result").innerHTML = "";
-        });
+    function clearSearchResult() {
+        document.getElementById("result").innerHTML = "";
+        document.getElementById("code").value = "";
+    }
+    // Buton görünümündeki linkler
+    document.querySelectorAll(".btn-primary, .nav-cta").forEach(btn => {
+        btn.addEventListener("click", clearSearchResult);
+    });
+    // Menü linkleri
+    document.querySelectorAll(".nav-links a").forEach(link => {
+        link.addEventListener("click", clearSearchResult);
     });
     /* ---------- DATA ---------- */
   
@@ -680,13 +687,36 @@
   const formError = document.getElementById('formError');
   form.addEventListener('submit', async (e)=>{
     e.preventDefault();
+    
     const nights = nightsBetween();
     const requiredOk = form.checkValidity();
-    if(!requiredOk || nights <= 0){
-      formError.style.display='block';
-      return;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const checkInDate = new Date(checkin.value);
+    const checkOutDate = new Date(checkout.value);
+    const maxDate = new Date(checkInDate);
+    maxDate.setFullYear(maxDate.getFullYear() + 1);
+    if (!requiredOk) {
+        formError.textContent = "Lütfen tüm zorunlu alanları doldurun.";
+        formError.style.display = "block";
+        return;
     }
-    formError.style.display='none';
+    if (checkInDate < today) {
+        formError.textContent = "Geçmiş tarihe rezervasyon oluşturulamaz.";
+        formError.style.display = "block";
+        return;
+    }
+    if (checkOutDate <= checkInDate) {
+        formError.textContent = "Çıkış tarihi giriş tarihinden sonra olmalıdır.";
+        formError.style.display = "block";
+        return;
+    }
+    if (checkOutDate > maxDate) {
+        formError.textContent = "1 yıldan uzun süreli rezervasyon yapılamaz.";
+        formError.style.display = "block";
+        return;
+    }
+    formError.style.display = "none";
 
     const room = currentRoom();
     const total = room.price * nights;
