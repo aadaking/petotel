@@ -482,8 +482,7 @@ ccc
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-    document.getElementById("code").value = "";
-    result.innerHTML = "";
+    
     
   const ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, cap:"Küçük–Orta boy köpek", tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
@@ -617,6 +616,18 @@ ccc
                 </div>
               </div>
             </div>
+            <div class="ticket-stub">
+                  <svg class="paw" viewBox="0 0 40 40" fill="none">
+                    <path d="M20 22c-4.5 0-8 3-8 6.2 0 1.5 1.2 2.3 2.7 1.9 1.6-.4 3.4-.7 5.3-.7s3.7.3 5.3.7c1.5.4 2.7-.4 2.7-1.9 0-3.2-3.5-6.2-8-6.2z" fill="#E3A857"/>
+                    <ellipse cx="13.5" cy="17" rx="2.3" ry="2.9" fill="#E3A857"/>
+                    <ellipse cx="26.5" cy="17" rx="2.3" ry="2.9" fill="#E3A857"/>
+                    <ellipse cx="17.3" cy="13" rx="1.9" ry="2.4" fill="#E3A857"/>
+                    <ellipse cx="22.7" cy="13" rx="1.9" ry="2.4" fill="#E3A857"/>
+                  </svg>
+                  <div class="stub-code">
+                    ${reservation.code}
+                  </div>
+                </div>
           </div>
         </div>`;
 
