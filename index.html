@@ -536,6 +536,8 @@
   const sumNights = document.getElementById('sumNights');
   const sumRate = document.getElementById('sumRate');
   const sumTotal = document.getElementById('sumTotal');
+  const roomSelectf = document.getElementById("room");
+  const petType = document.getElementById("petType");
 
   function currentRoom(){ return ROOMS.find(r=>r.id===roomSelect.value) || ROOMS[0]; }
   function nightsBetween(){
@@ -552,7 +554,42 @@
     sumNights.textContent = nights > 0 ? nights : '—';
     sumTotal.textContent = nights > 0 ? `₺${(room.price*nights).toLocaleString('tr-TR')}` : '—';
   }
-  roomSelect.addEventListener('change', updateSummary);
+    
+    function updateRoomOptions() {
+        roomSelectf.innerHTML = "";
+        let rooms = [];
+        switch (petType.value) {
+            case "Kedi":
+                rooms = ROOMS.filter(r =>
+                    r.id === "kedi" || r.id === "vip"
+                );
+                break;
+            case "Köpek":
+                rooms = ROOMS.filter(r =>
+                    r.id === "standart" ||
+                    r.id === "deluxe" ||
+                    r.id === "vip"
+                );
+                break;
+            case "Diğer":
+                rooms = ROOMS.filter(r =>
+                    r.id === "standart"
+                );
+                break;
+            default:
+                rooms = ROOMS;
+        }
+        rooms.forEach(room => {
+            const option = document.createElement("option");
+            option.value = room.id;
+            option.textContent = `${room.name} — ₺${room.price}/gece`;
+            roomSelectf.appendChild(option);
+        });
+        updateRoomOptions();
+        petType.addEventListener("change", updateRoomOptions)
+    }
+    
+  roomSelectf.addEventListener('change', updateSummary);
   checkin.addEventListener('change', updateSummary);
   checkout.addEventListener('change', updateSummary);
   updateSummary();
