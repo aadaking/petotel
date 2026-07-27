@@ -497,7 +497,10 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const ROOMS = [
+  // Bu dizi, veritabanına ulaşılamazsa kullanılacak YEDEK veridir.
+  // Sayfa açılır açılmaz bununla çizilir, ardından room_types tablosundan
+  // gelen güncel fiyat/isim/adet bilgisiyle üzerine yazılır.
+  let ROOMS = [
     { id:"standart", name:"Standart Kulübe", price:450, units:8, cap:"Küçük–Orta boy köpek", petTypes: ["Köpek", "Diğer"], tags:["Isıtmalı zemin","Günde 2 yürüyüş","Ortak bahçe"] },
     { id:"deluxe", name:"Deluxe Süit", price:750, units:5, cap:"Her boy köpek", petTypes: ["Köpek"], tags:["Kamera erişimi","Günde 3 yürüyüş","Özel yatak"] },
     { id:"kedi", name:"Kedi Odası", price:400, units:5, cap:"Kedi dostlarımız için", petTypes: ["Kedi"], tags:["Sessiz kat","Tırmalama alanı","Pencere kenarı"] },
@@ -506,25 +509,26 @@
 
   const roomGrid = document.getElementById('roomGrid');
   const roomSelect = document.getElementById('roomSelect');
-  ROOMS.forEach(r=>{
-    roomGrid.insertAdjacentHTML('beforeend', `
-      <div class="room-card">
-        <div class="notch"></div>
-        <div class="room-top">
-          <h3>${r.name}</h3>
-          <div class="price">₺${r.price}<small>/ gece</small></div>
+
+  function renderRoomGrid(){
+    roomGrid.innerHTML = "";
+    ROOMS.forEach(r=>{
+      roomGrid.insertAdjacentHTML('beforeend', `
+        <div class="room-card">
+          <div class="notch"></div>
+          <div class="room-top">
+            <h3>${r.name}</h3>
+            <div class="price">₺${r.price}<small>/ gece</small></div>
+          </div>
+          <div class="room-body">
+            <p>${r.cap}</p>
+            <div class="room-tags">${r.tags.map(t=>`<span>${t}</span>`).join('')}</div>
+          </div>
         </div>
-        <div class="room-body">
-          <p>${r.cap}</p>
-          <div class="room-tags">${r.tags.map(t=>`<span>${t}</span>`).join('')}</div>
-        </div>
-      </div>
-    `);
-    const opt = document.createElement('option');
-    opt.value = r.id;
-    opt.textContent = `${r.name} — ₺${r.price}/gece`;
-    roomSelect.appendChild(opt);
-  });
+      `);
+    });
+  }
+  renderRoomGrid();
 
   // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
   const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co';
@@ -901,6 +905,33 @@
     form.reset();
     updateSummary();
   });
+
+  async function loadRoomTypesFromDB(){
+    if(!supabaseClient) return;
+    const { data, error } = await supabaseClient.from('room_types').select('*');
+    if(error){
+      console.error('Oda tipleri veritabanından alınamadı, sabit (yedek) veriler kullanılıyor.', error);
+      return;
+    }
+    if(!data || data.length === 0) return;
+
+    data.forEach(dbRoom=>{
+      const local = ROOMS.find(r => r.id === dbRoom.id);
+      if(local){
+        local.name = dbRoom.name;
+        local.price = Number(dbRoom.price);
+        local.units = dbRoom.units;
+      }else{
+        // room_types'ta olup site kodunda tanımlı olmayan yeni bir oda tipi varsa
+        // temel bilgilerle (açıklama/etiket olmadan) listeye ekle
+        ROOMS.push({ id: dbRoom.id, name: dbRoom.name, price: Number(dbRoom.price), units: dbRoom.units, cap: '', petTypes: [], tags: [] });
+      }
+    });
+
+    renderRoomGrid();
+    updateRoomOptions();
+  }
+  loadRoomTypesFromDB();
 </script>
 </body>
 </html>
