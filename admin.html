@@ -282,11 +282,11 @@
   let calDate = new Date();
 
   // ↓↓↓ Supabase kurulumundan (Settings → API) aldığın URL ve anon key'i buraya yapıştır.
-  const SUPABASE_URL = 'https://nrcivkcmubdpdcahyxlv.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5yY2l2a2NtdWJkcGRjYWh5eGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1MDM2ODUsImV4cCI6MjEwMDA3OTY4NX0.Vg_hfUAH-JbfQBBPJADrxmxRzZjQJEbkKIjRXQSUhEc';
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-PUBLIC-KEY';
   let supabaseClient = null;
   try{
-      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }catch(e){
     console.error('Supabase bağlantısı kurulamadı — URL/anahtar veya CDN yükleme sorunu olabilir.', e);
   }
@@ -374,6 +374,20 @@
   }
 
   async function updateStatus(code, status){
+    const rec = allReservations.find(r=>r.code===code);
+
+    if(status === 'onaylandi' && rec){
+      const { data: available, error: availErr } = await supabaseClient.rpc('check_room_availability', {
+        p_room_id: rec.roomId,
+        p_check_in: rec.checkin,
+        p_check_out: rec.checkout
+      });
+      if(!availErr && available === false){
+        const proceed = confirm(`Uyarı: ${rec.roomName} bu tarihlerde (${rec.checkin} → ${rec.checkout}) zaten dolu görünüyor (kapasitede yer yok). Yine de onaylamak istiyor musunuz?`);
+        if(!proceed) return;
+      }
+    }
+
     const { error } = await supabaseClient.from('reservations').update({ status }).eq('code', code);
     if(error){ console.error(error); return; }
     allReservations = await loadReservations();

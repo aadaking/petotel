@@ -185,6 +185,10 @@
   .submit-row{ display:flex; align-items:center; gap:16px; margin-top:8px; flex-wrap:wrap; }
   .submit-row .btn-primary{ width:50%; text-align:center; }
   .form-error{ color:var(--rust); font-size:1.05rem; font-weight:700; margin-top:10px; display:none; }
+  .availability-note{ font-size:0.88rem; font-weight:700; padding:10px 14px; border-radius:9px; margin-top:6px; margin-bottom:6px; }
+  .availability-note.available{ background:rgba(35,77,53,0.1); color:var(--pine); }
+  .availability-note.unavailable{ background:rgba(180,71,42,0.1); color:var(--rust); }
+  .availability-note.checking{ background:rgba(22,38,28,0.06); color:rgba(22,38,28,0.55); }
 
   .summary-card{
     background:var(--pine); color:var(--linen); border-radius:var(--radius);
@@ -400,8 +404,10 @@
             </div>
           </fieldset>
 
+          <div class="availability-note" id="availabilityNote" style="display:none;"></div>
+
           <div class="submit-row">
-            <button type="submit" class="btn-primary">Rezervasyon Talebini Gönder</button>
+            <button type="submit" class="btn-primary" id="submitBtn">Rezervasyon Talebini Gönder</button>
           </div>
           <div class="form-error" id="formError">Lütfen tüm zorunlu alanları doldurun ve çıkış tarihinin girişten sonra olduğundan emin olun.</div>
         </form>
@@ -567,6 +573,51 @@
     sumNights.textContent = nights > 0 ? nights : '—';
     sumTotal.textContent = nights > 0 ? `₺${(room.price*nights).toLocaleString('tr-TR')}` : '—';
   }
+
+  let currentAvailability = true;
+  async function checkAvailability(){
+    const note = document.getElementById('availabilityNote');
+    const submitBtn = document.getElementById('submitBtn');
+    const nights = nightsBetween();
+    if(nights <= 0 || !roomSelectf.value){
+      note.style.display = 'none';
+      currentAvailability = true;
+      submitBtn.disabled = false;
+      return;
+    }
+    if(!supabaseClient){
+      note.style.display = 'none';
+      currentAvailability = true;
+      return;
+    }
+    note.className = 'availability-note checking';
+    note.textContent = 'Müsaitlik kontrol ediliyor...';
+    note.style.display = 'block';
+
+    const { data, error } = await supabaseClient.rpc('check_room_availability', {
+      p_room_id: roomSelectf.value,
+      p_check_in: checkin.value,
+      p_check_out: checkout.value
+    });
+
+    if(error){
+      console.error('Müsaitlik kontrolü hatası', error);
+      note.style.display = 'none';
+      currentAvailability = true;
+      submitBtn.disabled = false;
+      return;
+    }
+
+    currentAvailability = !!data;
+    submitBtn.disabled = !currentAvailability;
+    if(currentAvailability){
+      note.className = 'availability-note available';
+      note.textContent = 'Bu tarihlerde müsait ✓';
+    }else{
+      note.className = 'availability-note unavailable';
+      note.textContent = 'Üzgünüz, bu oda tipi seçtiğiniz tarihlerde dolu. Farklı bir tarih ya da oda deneyin.';
+    }
+  }
     
     function updateRoomOptions() {
         roomSelectf.innerHTML = "";
@@ -599,13 +650,14 @@
             roomSelectf.appendChild(option);
         });
         updateSummary();
+        checkAvailability();
     }
     petType.addEventListener("change", updateRoomOptions);
     updateRoomOptions();
     
-  roomSelectf.addEventListener('change', updateSummary);
-  checkin.addEventListener('change', updateSummary);
-  checkout.addEventListener('change', updateSummary);
+  roomSelectf.addEventListener('change', ()=>{ updateSummary(); checkAvailability(); });
+  checkin.addEventListener('change', ()=>{ updateSummary(); checkAvailability(); });
+  checkout.addEventListener('change', ()=>{ updateSummary(); checkAvailability(); });
   updateSummary();
 
   function genCode(){
@@ -760,6 +812,19 @@
         formError.textContent = "1 yıldan uzun süreli rezervasyon yapılamaz.";
         formError.style.display = "block";
         return;
+    }
+
+    if(supabaseClient){
+      const { data: stillAvailable, error: availErr } = await supabaseClient.rpc('check_room_availability', {
+        p_room_id: roomSelectf.value,
+        p_check_in: checkin.value,
+        p_check_out: checkout.value
+      });
+      if(!availErr && stillAvailable === false){
+        formError.textContent = "Üzgünüz, bu oda tipi seçtiğiniz tarihlerde az önce doldu. Farklı bir tarih ya da oda seçin.";
+        formError.style.display = "block";
+        return;
+      }
     }
     formError.style.display = "none";
 
