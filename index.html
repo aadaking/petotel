@@ -316,7 +316,7 @@
     <div class="hero-art">
       <div class="stamp-card">
         <div class="tag-hole"></div>
-        <div class="stat-row"><span class="label">Kapasite</span><span class="value">20 kulübe</span></div>
+        <div class="stat-row"><span class="label">Kapasite</span><span class="value" id="capacityValue">—</span></div>
         <div class="stat-row"><span class="label">Günlük kontrol</span><span class="value">4× bakım</span></div>
         <div class="stat-row"><span class="label">Veteriner desteği</span><span class="value">Sahada</span></div>
         <div class="stat-row"><span class="label">Ort. doluluk</span><span class="value" id="occupancyValue">—</span></div>
@@ -545,6 +545,17 @@
     el.textContent = `%${Number(data) || 0}`;
   }
   updateOccupancy();
+
+  async function updateCapacity(){
+    const el = document.getElementById('capacityValue');
+    if(!el) return;
+    if(!supabaseClient){ el.textContent = '—'; return; }
+    const { data, error } = await supabaseClient.from('room_types').select('units');
+    if(error){ console.error('Kapasite alınamadı', error); el.textContent = '—'; return; }
+    const total = (data || []).reduce((sum, r) => sum + (r.units || 0), 0);
+    el.textContent = `${total} kulübe`;
+  }
+  updateCapacity();
 
   const checkin = document.getElementById('checkin');
   const checkout = document.getElementById('checkout');
