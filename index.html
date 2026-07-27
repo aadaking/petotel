@@ -620,6 +620,7 @@
   }
     
     function updateRoomOptions() {
+        const previousValue = roomSelectf.value;
         roomSelectf.innerHTML = "";
         let rooms = [];
         switch (petType.value) {
@@ -649,6 +650,11 @@
             option.textContent = `${room.name} — ₺${room.price}/gece`;
             roomSelectf.appendChild(option);
         });
+        // Önceki seçim yeni (filtrelenmiş) listede hâlâ varsa onu koru,
+        // yoksa (ör. Kedi seçilince Standart artık listede değilse) ilk seçeneğe düş
+        if(previousValue && rooms.some(r => r.id === previousValue)){
+            roomSelectf.value = previousValue;
+        }
         updateSummary();
         checkAvailability();
     }
