@@ -540,12 +540,9 @@
     const el = document.getElementById('occupancyValue');
     if(!el) return;
     if(!supabaseClient){ el.textContent = '—'; return; }
-    const { data, error } = await supabaseClient.rpc('get_occupancy_today');
+    const { data, error } = await supabaseClient.rpc('get_occupancy_rate_today');
     if(error){ console.error('Doluluk oranı alınamadı', error); el.textContent = '—'; return; }
-    const totalUnits = ROOMS.reduce((s,r)=> s + (r.units||0), 0) || 1;
-    const occupied = Math.min(Number(data) || 0, totalUnits);
-    const pct = Math.round((occupied/totalUnits)*100);
-    el.textContent = `%${pct}`;
+    el.textContent = `%${Number(data) || 0}`;
   }
   updateOccupancy();
 
